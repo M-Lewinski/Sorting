@@ -4,11 +4,13 @@
 
 #include "src/SelectionSort/SelectSort.h"
 
+int sorts = 1;
 void (*sort[1])(int* list,int count,int mode) = {select_sort};
+char *sortName[] = {"Selection Sort"};
 //Lista sortowań do wykonania
 int sortList[8];
 //Liczba sortowań do wykonania
-int sortNumber=0;
+int sortCount=0;
 //Ilość liczb
 int amount = -1;
 //Liczba powtórzeń do wykonania;
@@ -19,21 +21,31 @@ int increaseType = -1;
 int increase = 0;
 //Sprawdzanie poprawności sortowania.
 bool doingTest = false;
+//tryb = 0-sortowanie malejąco | 1-sortowanie rosnąco
+int tryb=1;
+
+//min i max losowanej wartości
+int min = 0; int max = 100000;
 
 int checkArguments(int index,int argc,char* argv[]);
 int checkNumber(char *arg);
 void updateSortList(int number);
 void copyList(int *listToCopy,int *copy,int amount);
+void printList(int *list,int amount);
+void test(int *list,int amount,int sort,int tryb);
+//Pseudo random generator
+void randomize(int *list,int amount);
 
 void checkVariables(){
     printf("Amount: %d\n",amount);
     printf("Cycles: %d\n",cycles);
     printf("increase: %d\n",increase);
     printf("increaseType: %d\n",increaseType);
-    printf("sortNumber: %d\n",sortNumber);
+    printf("sortCount: %d\n",sortCount);
 }
 
 int main(int argc,char* argv[]){
+    srand(time(0));
     int i;
     if(argc < 2){
         printf("Za mało argumentów. Sprawdź pomoc -h lub --help");
@@ -45,13 +57,15 @@ int main(int argc,char* argv[]){
     for(i=2;i<argc;i++){
         i=checkArguments(i,argc,argv);
     }
-    if(sortNumber<=0){
-        for(i=0;i<8;++i){
+    if(sortCount<=0){
+        for(i=0;i<sorts;++i){
             updateSortList(i);
         }
     }
-    checkVariables();
-
+    if(doingTest){
+        checkVariables();
+    }
+    //Powtarzanie sortowań
     for(i=0;i<cycles;i++){
         if(i!=0){
             switch (increaseType){
@@ -61,14 +75,21 @@ int main(int argc,char* argv[]){
                     break;
             }
         }
+        //Tworzenie list
         int *primaryList = (int*) malloc(sizeof(int)*amount);
         int *temporaryList = (int*) malloc(sizeof(int)*amount);
+
+        //PRNG
+        randomize(primaryList,amount);
+        printList(primaryList,amount);
         int j;
-        for(j=0;j<sortNumber;j++){
+        for(j=0;j<sortCount;j++){
             copyList(primaryList,temporaryList,amount);
-
+            (*sort[j])(temporaryList,amount,tryb);
+            printList(temporaryList,amount);
+            test(temporaryList,amount,sortCount,tryb);
         }
-
+        //Usuwanie list
         free(primaryList);
         free(temporaryList);
     }
@@ -77,8 +98,8 @@ int main(int argc,char* argv[]){
 
 //Rejestrowanie, które sortowania mają być wykonane
 void updateSortList(int number){
-    sortList[sortNumber]= number;
-    sortNumber++;
+    sortList[sortCount]= number;
+    sortCount++;
 }
 
 //Informacja pomocnicza do obsługi programu
@@ -96,6 +117,64 @@ char* increaseIndex(int *index,int argc,char*argv[]){
     }
     return argv[*index];
 }
+
+//Zmiana łańcucha znaków na integer. Sprawdzenie poprawności
+int checkNumber(char *arg){
+    char *test;
+    int number = strtol(arg,&test,10);
+    if(strcmp(test,"") != 0){
+        printf("Zła wartość integer! %s\n",test);
+        exit(1);
+    }
+    return number;
+}
+
+void copyList(int *listToCopy,int *copy,int amount){
+    int i;
+    for(i=0;i<amount;i++){
+        copy[i] = listToCopy[i];
+    }
+}
+
+void printList(int *list,int amount){
+    if(!doingTest){
+        return;
+    }
+    int i;
+    printf("\n");
+    for (i = 0; i < amount; i++) {
+        printf("%d\t",list[i]);
+    }
+    printf("\n");
+}
+
+void randomize(int *list,int amount){
+    int i,random;
+    for (i = 0; i < amount; i++) {
+        random = rand() %(max - min + 1) + min;
+        list[i] = random;
+    }
+}
+
+void test(int *list,int amount,int sort,int tryb){
+    if(!doingTest){
+        return;
+    }
+    int i;
+    bool correct;
+    for (i = 0; i < amount-1; i++) {
+        switch (tryb){
+            case 0: correct = list[i] > list[i+1];
+                break;
+            case 1: correct = list[i] < list[i+1];
+        }
+        if(!correct){
+            printf("Błędne sortowanie: %s",sortName[sort]);
+            exit(1);
+        }
+    }
+}
+
 
 //Obsługa argumentów oraz sprawdzenie ich poprawności
 int checkArguments(int index,int argc,char* argv[]){
@@ -133,34 +212,27 @@ int checkArguments(int index,int argc,char* argv[]){
     }
     else if(strcmp(arg,"-a")==0 || strcmp(arg,"-all")==0){
         int i;
-        for(i=0;i<8;i++){
+        for(i=0;i<sorts;i++){
             updateSortList(i);
         }
     }
-        else if(strcmp(arg,"-t")== 0 || strcmp(arg,"--test")== 0){
-
+    else if(strcmp(arg,"-t")== 0 || strcmp(arg,"--test")== 0) {
+        doingTest = true;
+    }
+    else if(strcmp(arg,"-min")== 0){
+        arg = increaseIndex(&index,argc,argv);
+        min = checkNumber(arg);
+    }
+    else if(strcmp(arg,"-max")== 0){
+        arg = increaseIndex(&index,argc,argv);
+        max = checkNumber(arg);
+    }
+        else if(strcmp(arg,"-d")== 0){
+        tryb = 0;
     }
     else{
         printf("Zły argument, sprawdź pomoc. Argument -h lub --help");
         exit(1);
     }
     return index;
-}
-
-//Zmiana łańcucha znaków na integer. Sprawdzenie poprawności
-int checkNumber(char *arg){
-    char *test;
-    int number = strtol(arg,&test,10);
-    if(strcmp(test,"") != 0){
-        printf("Zła wartość integer! %s\n",test);
-        exit(1);
-    }
-    return number;
-}
-
-void copyList(int *listToCopy,int *copy,int amount){
-    int i;
-    for(i=0;i<amount;i++){
-        copy[i] = listToCopy[i];
-    }
 }

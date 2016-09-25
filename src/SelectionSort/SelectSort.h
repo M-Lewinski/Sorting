@@ -8,7 +8,7 @@
 #include <math.h>
 #include <time.h>
 
+//Selection sort. tryb: 0 = malejąco  1 = rosnąco
 void select_sort(int *p, int amount, int tryb);
-void test();
 
 #endif //SORTING_SELECTSORT_H
