@@ -1,0 +1,5 @@
+# Do not copy files from this directory
+*
+# Copy only this file
+!.gitignore
+!INFO.md
