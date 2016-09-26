@@ -12,20 +12,20 @@ int shell_gap(int *lista, int count, int loop){
 }
 
 void shell_sort(int *lista, int amount, int tryb) {
-    int tmp, i, j, k, gap = 1;
+    int swap, i, j, k, gap = 1;
     for (i = 0; gap > 0; i++) {
         gap = shell_gap(lista, amount, i);
         for (j = gap; j < amount; j++) {
-            tmp = lista[j];
+            swap = lista[j];
             for (k = j; k >= gap; k -= gap) {
-                if (check(lista[k - gap],tmp, tryb)) {
+                if (check(lista[k - gap],swap, tryb)) {
                     lista[k] = lista[k - gap];
                 }
                 else {
                     break;
                 }
             }
-            lista[k] = tmp;
+            lista[k] = swap;
         }
     }
 }

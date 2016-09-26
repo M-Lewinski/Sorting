@@ -3,17 +3,36 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <time.h>
-#include <math.h>
 
 #include "src/SelectionSort/SelectSort.h"
 #include "src/InsertionSort/InsertSort.h"
 #include "src/ShellSort/ShellSort.h"
 #include "src/HeapSort/HeapSort.h"
 #include "src/QuickSort/Recursive/QuickSortRecursive.h"
+#include "src/QuickSort/Iterative/QuickSortIterative.h"
 
-int sorts = 6;
-void (*sort[])(int* list,int count,int mode) = {select_sort,insert_sort,shell_sort,heap_sort,quick_sort_recursive_random,quick_sort_recursive_right};
-char *sortName[] = {"Selection Sort","Insertion Sort","Shell Sort","Heap Sort","Quick Sort Recursive Random pivot/key","Quick Sort Recursive Right pivot/key"};
+void a_Shaped(int *lista,int count);
+void increasing(int *lista,int count);
+void decreasing(int *lista,int count);
+void same(int *lista,int count);
+
+void startFiles();
+void checkFile(char *name);
+FILE *fileArray;
+
+//Liczba sortowań
+int sorts = 8;
+//Tablica funkcji sortujących
+void (*sort[])(int* list,int count,int mode) = {select_sort,insert_sort,shell_sort,heap_sort,quick_sort_recursive_random,quick_sort_recursive_right,quick_sort_iterative_rand,quick_sort_iterative_right};
+//Nazwy sortowań
+char *sortName[] = {"Selection Sort","Insertion Sort","Shell Sort","Heap Sort","Quick Sort Recursive Random pivot/key","Quick Sort Recursive Right pivot/key","Quick Sort Iterative Random pivot/key","Quick Sort Iterative Right pivot/key"};
+//Nazwy plików, do których zostaną zapisane czasy wykonania poszczególnych sortowań.
+char *fileName[] = {"select_sort.txt","insertion_sort.txt","shell_sort.txt","heap_sort.txt","quick_sort_rec_rand.txt","quick_sort_rec_right.txt","quick_sort_iter_rand.txt","quick_sort_iter_right.txt"};
+//liczba sposobów uporządkowania początkowej listy do sortowania
+int arrangement = 5;
+//Tablica funkcji uporzątkowujących początkowe listy do sortowania
+void (*arrange[])(int *lista,int count) = {a_Shaped,increasing,decreasing,same};
+void *arrangmentName[] = {"A Shaped","Increasing","Decreasing","same"};
 //Lista sortowań do wykonania
 int sortList[8];
 //Liczba sortowań do wykonania
@@ -56,7 +75,6 @@ void checkVariables(){
 
 int main(int argc,char* argv[]){
     srand(time(0));
-    printf("\n#### %lu ####\n",sizeof(sortList));
     int i;
     if(argc < 2){
         printf("Za mało argumentów. Sprawdź pomoc -h lub --help");
@@ -86,19 +104,28 @@ int main(int argc,char* argv[]){
                     break;
             }
         }
+        int k;
+
         //Tworzenie list
         int *primaryList = (int*) malloc(sizeof(int)*amount);
         int *temporaryList = (int*) malloc(sizeof(int)*amount);
 
-        //PRNG
-        randomize(primaryList,amount);
-        printList(primaryList,amount);
         int j;
-        for(j=0;j<sortCount;j++){
-            copyList(primaryList,temporaryList,amount);
-            (*sort[j])(temporaryList,amount,tryb);
-            printListSort(temporaryList,amount,j);
-            test(temporaryList,amount,j,tryb);
+        for (j = 0; j < 5; ++j) {
+            if(j==0){
+                //PRNG
+                randomize(primaryList,amount);
+            }
+            else{
+                arrange[j-1](primaryList,amount);
+            }
+            printList(primaryList, amount);
+            for (k = 0; k < sortCount; k++) {
+                copyList(primaryList, temporaryList, amount);
+                (*sort[k])(temporaryList, amount, tryb);
+                printListSort(temporaryList, amount, k);
+                test(temporaryList, amount, k, tryb);
+            }
         }
         //Usuwanie list
         free(primaryList);
@@ -151,7 +178,7 @@ void printList(int *list,int amount){
     if(!doingTest){
         return;
     }
-    printf("\n");
+    printf("List of numbers:\n");
     printing(list, amount);
 }
 
@@ -254,4 +281,32 @@ int checkArguments(int index,int argc,char* argv[]){
         exit(1);
     }
     return index;
+}
+
+void a_Shaped(int *lista,int count){
+    heap_sort(lista,count,0);
+    heap_sort(lista,count/2,1);
+}
+void increasing(int *lista,int count){
+    heap_sort(lista,count,1);
+}
+void decreasing(int *lista,int count){
+    heap_sort(lista,count,0);
+}
+void same(int *lista,int count){
+    int i;
+    for (i = 1; i < count; ++i) {
+        lista[i]=lista[0];
+    }
+}
+
+void startFiles(){
+    int i;
+    for (i = 0; i < sortCount; ++i) {
+        fileArray = (FILE*)malloc(sizeof(FILE)*sortCount);
+    }
+}
+
+void checkFile(char *name){
+
 }

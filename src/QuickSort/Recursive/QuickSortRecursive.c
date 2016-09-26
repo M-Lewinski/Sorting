@@ -23,7 +23,7 @@ void quick_sort_rek_rand(int *lista, int left, int right, int type) {
 
 void checkKey(int *lista, int type, int key, int *i, int *j) {
     while ((*i) <= (*j)){
-        int tmp;
+        int swap;
         while (check(key, lista[(*i)], type)){
                 (*i)++;
         }
@@ -31,9 +31,9 @@ void checkKey(int *lista, int type, int key, int *i, int *j) {
                 (*j)--;
         }
         if ((*i) <= (*j)){
-            tmp = lista[(*i)];
+            swap = lista[(*i)];
             lista[(*i)]=lista[(*j)];
-            lista[(*j)]=tmp;
+            lista[(*j)]=swap;
                 (*i)++;
                 (*j)--;
         }

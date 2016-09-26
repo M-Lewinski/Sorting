@@ -4,13 +4,13 @@
 
 #include "HeapSort.h"
 void heap_sort(int *lista, int amount, int tryb){
-    int tmp,i;
+    int swap,i;
     heap_build(lista,amount,tryb); //budujemy początkowy kopiec. Musimy uzyskać kopiec, w którym korzeń jest elementem największym/najmniejszym dla uporządkowania rosnącego/malejącego
     //Zabieramy elementy z korzenia, które już są uporządkowane
     for (i=amount-1;i>0;i--){
-        tmp=*lista;
+        swap=*lista;
         *lista=*(lista+i);
-        *(lista+i)=tmp;
+        *(lista+i)=swap;
         heap_check(lista,i,0,tryb);
     }
 }
@@ -28,7 +28,7 @@ void heap_build(int *lista, int amount, int tryb){
  * Sprawdzanie kopca. Chcemy aby w korzeniu, znajdował się element największy/najmniejszy dla uporządkowania rosnącego/malejącego.
  */
 void heap_check(int *lista, int amount, int i, int tryb){
-    int tmp,j;
+    int swap,j;
     bool a;
     j=i;
     do{
@@ -57,9 +57,9 @@ void heap_check(int *lista, int amount, int i, int tryb){
         }
         //Zamieniamy dziecko z rodzicem jeżeli są one uporządkowane nieprawidłowo.
         if (i!=j){
-            tmp=*(lista+i);
+            swap=*(lista+i);
             *(lista+i)=*(lista+j);
-            *(lista+j)=tmp;
+            *(lista+j)=swap;
         }
         //Kończymy jeżeli dla danego wierzchołka, wszystkie dzieci/wierzchołki są uporządkowane prawidłowo.
     }while (i!=j);
