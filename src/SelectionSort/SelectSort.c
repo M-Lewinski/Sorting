@@ -2,23 +2,15 @@
 #include "SelectSort.h"
 
 
-void select_sort(int *p, int amount, int tryb){
+void select_sort(int *lista, int amount, int tryb){
     int i,j,tmp;
-    bool a;
     for (i=0;i<(amount-1);i++){
-        for (j=i;j<amount-1;j++){
-            switch (tryb){
-                case 0: a=(*(p+i)<*(p+j+1));
-                    break;
-                case 1: a=(*(p+i)>*(p+j+1));
-                    break;
+        for (j=i+1;j<amount;j++){
+            if(check(lista[i],lista[j],tryb)){
+                tmp=lista[i];
+                lista[i]=lista[j];
+                lista[j]=tmp;
             }
-            if (a==true){
-                tmp=*(p+i);
-                *(p+i)=*(p+j+1);
-                *(p+j+1)=tmp;
-            }
-
         }
     }
 }

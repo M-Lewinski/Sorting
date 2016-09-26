@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
-#include <time.h>
+#include "../tryby.h"
 
 //Selection sort. tryb: 0 = malejąco  1 = rosnąco
-void select_sort(int *p, int amount, int tryb);
+void select_sort(int *lista, int amount, int tryb);
 
 #endif //SORTING_SELECTSORT_H

@@ -1,12 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <stdbool.h>
+#include <time.h>
+#include <math.h>
 
 #include "src/SelectionSort/SelectSort.h"
+#include "src/InsertionSort/InsertSort.h"
+#include "src/ShellSort/ShellSort.h"
+#include "src/tryby.h"
+#include "src/HeapSort/HeapSort.h"
 
-int sorts = 1;
-void (*sort[1])(int* list,int count,int mode) = {select_sort};
-char *sortName[] = {"Selection Sort"};
+int sorts = 4;
+void (*sort[])(int* list,int count,int mode) = {select_sort,insert_sort,shell_sort,heap_sort};
+char *sortName[] = {"Selection Sort","Insertion Sort","Shell Sort","Heap Sort"};
 //Lista sortowań do wykonania
 int sortList[8];
 //Liczba sortowań do wykonania
@@ -32,9 +39,12 @@ int checkNumber(char *arg);
 void updateSortList(int number);
 void copyList(int *listToCopy,int *copy,int amount);
 void printList(int *list,int amount);
+void printListSort(int *list,int amount,int sort);
 void test(int *list,int amount,int sort,int tryb);
 //Pseudo random generator
 void randomize(int *list,int amount);
+
+void printing(const int *list, int amount);
 
 void checkVariables(){
     printf("Amount: %d\n",amount);
@@ -86,8 +96,8 @@ int main(int argc,char* argv[]){
         for(j=0;j<sortCount;j++){
             copyList(primaryList,temporaryList,amount);
             (*sort[j])(temporaryList,amount,tryb);
-            printList(temporaryList,amount);
-            test(temporaryList,amount,sortCount,tryb);
+            printListSort(temporaryList,amount,j);
+            test(temporaryList,amount,j,tryb);
         }
         //Usuwanie list
         free(primaryList);
@@ -140,8 +150,20 @@ void printList(int *list,int amount){
     if(!doingTest){
         return;
     }
-    int i;
     printf("\n");
+    printing(list, amount);
+}
+
+void printListSort(int *list,int amount,int sort){
+    if(!doingTest){
+        return;
+    }
+    printf("%s:\n",sortName[sort]);
+    printing(list,amount);
+}
+
+void printing(const int *list, int amount) {
+    int i;
     for (i = 0; i < amount; i++) {
         printf("%d\t",list[i]);
     }
@@ -161,16 +183,12 @@ void test(int *list,int amount,int sort,int tryb){
         return;
     }
     int i;
-    bool correct;
     for (i = 0; i < amount-1; i++) {
-        switch (tryb){
-            case 0: correct = list[i] > list[i+1];
-                break;
-            case 1: correct = list[i] < list[i+1];
-        }
-        if(!correct){
-            printf("Błędne sortowanie: %s",sortName[sort]);
-            exit(1);
+        if(check(list[i],list[i+1],tryb)){
+            if(list[i]!=list[i+1]){
+                printf("Błędne sortowanie: %s ### %d | %d ###",sortName[sort],list[i],list[i+1]);
+                exit(1);
+            }
         }
     }
 }
