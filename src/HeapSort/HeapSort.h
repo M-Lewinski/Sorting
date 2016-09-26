@@ -11,8 +11,8 @@
 #include <math.h>
 #include "../tryby.h"
 
-void heap_sort(int *p,int count,int tryb);
-void heap_check(int *p,int count, int i,int tryb);
-void heap_build(int *p, int count,int tryb);
+void heap_sort(int *lista, int amount, int tryb);
+void heap_check(int *lista, int amount, int i, int tryb);
+void heap_build(int *lista, int amount, int tryb);
 
 #endif //SORTING_HEAPSORT_H

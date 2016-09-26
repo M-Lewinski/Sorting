@@ -3,63 +3,64 @@
 //
 
 #include "HeapSort.h"
-void heap_sort(int *p,int count,int tryb){
+void heap_sort(int *lista, int amount, int tryb){
     int tmp,i;
-    heap_build(p,count,tryb);
-    for (i=count-1;i>0;i--){
-        tmp=*p;
-        *p=*(p+i);
-        *(p+i)=tmp;
-        heap_check(p,i,0,tryb);
+    heap_build(lista,amount,tryb); //budujemy początkowy kopiec. Musimy uzyskać kopiec, w którym korzeń jest elementem największym/najmniejszym dla uporządkowania rosnącego/malejącego
+    //Zabieramy elementy z korzenia, które już są uporządkowane
+    for (i=amount-1;i>0;i--){
+        tmp=*lista;
+        *lista=*(lista+i);
+        *(lista+i)=tmp;
+        heap_check(lista,i,0,tryb);
     }
 }
 
 
-void heap_build(int *p, int count,int tryb){
+void heap_build(int *lista, int amount, int tryb){
     int i;
-    for (i=(count  / 2)-1;i >=0;i--){
-        //printf("iteracja :%d |",i);
-        heap_check(p,count,i,tryb);
+    //Sprawdzanie kopca zaczynamy od najbardziej prawego wierzchołka w kopcu.
+    //Rodzic tego wierzchołka w kopcu jest zawsze pośrodku listy, z której został stworzony kopiec.
+    for (i=(amount  / 2)-1;i >=0;i--){
+        heap_check(lista,amount,i,tryb); //Sprawdzamy kopiec.
     }
 }
-
-void heap_check(int *p,int count, int i,int tryb){
+/*
+ * Sprawdzanie kopca. Chcemy aby w korzeniu, znajdował się element największy/najmniejszy dla uporządkowania rosnącego/malejącego.
+ */
+void heap_check(int *lista, int amount, int i, int tryb){
     int tmp,j;
     bool a;
     j=i;
     do{
         i=j;
-        // printf("i: %d j: %d | ",i,j);
-        if ((2*i+1<count)&&(tryb!=0)){
-            a=(*(p+2*i+1)>*(p+j));
+        //Sprawdzamy lewe dziecko wierzchołka i.
+        if ((2*i+1<amount)&&(tryb!=0)){
+            a=(*(lista+2*i+1)>*(lista+j));
         }
-        else if ((2*i+1<count)&&(tryb==0)) {
-            a=(*(p+2*i+1)<*(p+j));
+        else if ((2*i+1<amount)&&(tryb==0)) {
+            a=(*(lista+2*i+1)<*(lista+j));
         }
-
-        if ((j<count) && (2*i+1<count) && a){
+        //Zapamiętujemy, że lewe dziecko powinno być zamienione z rodzicem.
+        if ((j<amount) && (2*i+1<amount) && a){
             j=2*i+1;
         }
-
-        if ((2*i+2<count)&&(tryb!=0)){
-            a=(*(p+2*i+2)>*(p+j));
+        //Sprawdzamy prawe dziecko wierzchołka i.
+        if ((2*i+2<amount)&&(tryb!=0)){
+            a=(*(lista+2*i+2)>*(lista+j));
         }
-        else if ((2*i+1<count)&&(tryb==0)) {
-            a=(*(p+2*i+2)<*(p+j));
+        else if ((2*i+1<amount)&&(tryb==0)) {
+            a=(*(lista+2*i+2)<*(lista+j));
         }
-
-        if ((j<count) && (2*i+2<count) && a){
+        //Zapamiętujemy, że prawe dziecko powinno być zmienione z rodzicem.
+        if ((j<amount) && (2*i+2<amount) && a){
             j=2*i+2;
         }
+        //Zamieniamy dziecko z rodzicem jeżeli są one uporządkowane nieprawidłowo.
         if (i!=j){
-            tmp=*(p+i);
-            *(p+i)=*(p+j);
-            *(p+j)=tmp;
+            tmp=*(lista+i);
+            *(lista+i)=*(lista+j);
+            *(lista+j)=tmp;
         }
-        /*for (q=0;q<count;q++){
-             printf("Liczba %d: %d\n",(q+1),*(p+q));
-         }*/
-
+        //Kończymy jeżeli dla danego wierzchołka, wszystkie dzieci/wierzchołki są uporządkowane prawidłowo.
     }while (i!=j);
-
 }

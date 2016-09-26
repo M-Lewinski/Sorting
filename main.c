@@ -8,12 +8,12 @@
 #include "src/SelectionSort/SelectSort.h"
 #include "src/InsertionSort/InsertSort.h"
 #include "src/ShellSort/ShellSort.h"
-#include "src/tryby.h"
 #include "src/HeapSort/HeapSort.h"
+#include "src/QuickSort/Recursive/QuickSortRecursive.h"
 
-int sorts = 4;
-void (*sort[])(int* list,int count,int mode) = {select_sort,insert_sort,shell_sort,heap_sort};
-char *sortName[] = {"Selection Sort","Insertion Sort","Shell Sort","Heap Sort"};
+int sorts = 6;
+void (*sort[])(int* list,int count,int mode) = {select_sort,insert_sort,shell_sort,heap_sort,quick_sort_recursive_random,quick_sort_recursive_right};
+char *sortName[] = {"Selection Sort","Insertion Sort","Shell Sort","Heap Sort","Quick Sort Recursive Random pivot/key","Quick Sort Recursive Right pivot/key"};
 //Lista sortowań do wykonania
 int sortList[8];
 //Liczba sortowań do wykonania
@@ -56,6 +56,7 @@ void checkVariables(){
 
 int main(int argc,char* argv[]){
     srand(time(0));
+    printf("\n#### %lu ####\n",sizeof(sortList));
     int i;
     if(argc < 2){
         printf("Za mało argumentów. Sprawdź pomoc -h lub --help");
