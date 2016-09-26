@@ -9,7 +9,8 @@ aux_source_directory(./src/QuickSort/Iterative QUICK_SORT_ITERATIVE)
 aux_source_directory(src/QuickSort/Recursive QUICK_SORT_RECURSIVE)
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
 
 set(SOURCE_FILES main.c)

@@ -3,6 +3,10 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <time.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <string.h>
+#include <inttypes.h>
 
 #include "src/SelectionSort/SelectSort.h"
 #include "src/InsertionSort/InsertSort.h"
@@ -17,8 +21,8 @@ void decreasing(int *lista,int count);
 void same(int *lista,int count);
 
 void startFiles();
-void checkFile(char *name);
-FILE *fileArray;
+char * checkFile(char *name);
+FILE **fileArray;
 
 //Liczba sortowań
 int sorts = 8;
@@ -32,7 +36,7 @@ char *fileName[] = {"select_sort.txt","insertion_sort.txt","shell_sort.txt","hea
 int arrangement = 5;
 //Tablica funkcji uporzątkowujących początkowe listy do sortowania
 void (*arrange[])(int *lista,int count) = {a_Shaped,increasing,decreasing,same};
-void *arrangmentName[] = {"A Shaped","Increasing","Decreasing","same"};
+char *arrangmentName[] = {"Random","A Shaped","Increasing","Decreasing","same"};
 //Lista sortowań do wykonania
 int sortList[8];
 //Liczba sortowań do wykonania
@@ -94,6 +98,7 @@ int main(int argc,char* argv[]){
     if(doingTest){
         checkVariables();
     }
+    startFiles();
     //Powtarzanie sortowań
     for(i=0;i<cycles;i++){
         if(i!=0){
@@ -111,7 +116,7 @@ int main(int argc,char* argv[]){
         int *temporaryList = (int*) malloc(sizeof(int)*amount);
 
         int j;
-        for (j = 0; j < 5; ++j) {
+        for (j = 0; j < arrangement; ++j) {
             if(j==0){
                 //PRNG
                 randomize(primaryList,amount);
@@ -121,15 +126,29 @@ int main(int argc,char* argv[]){
             }
             printList(primaryList, amount);
             for (k = 0; k < sortCount; k++) {
+                struct timespec start,end;
                 copyList(primaryList, temporaryList, amount);
+                clock_gettime(CLOCK_MONOTONIC_RAW,&start);
                 (*sort[k])(temporaryList, amount, tryb);
+                clock_gettime(CLOCK_MONOTONIC_RAW,&end);
+                uint64_t delta = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec)/1000;
+                fseek(fileArray[k],0,SEEK_END);
+                fprintf(fileArray[k],"%"PRIu64"\t",delta);
                 printListSort(temporaryList, amount, k);
                 test(temporaryList, amount, k, tryb);
+                if(j == arrangement-1){
+                    fseek(fileArray[k],0,SEEK_END);
+                    fprintf(fileArray[k],"\n");
+                }
             }
         }
         //Usuwanie list
         free(primaryList);
         free(temporaryList);
+    }
+    int f;
+    for (f = 0; f < sortCount; ++f) {
+        fclose(fileArray[sortList[f]]);
     }
         return 0;
 }
@@ -302,11 +321,36 @@ void same(int *lista,int count){
 
 void startFiles(){
     int i;
+    fileArray = (FILE*)malloc(sizeof(FILE)*sortCount);
     for (i = 0; i < sortCount; ++i) {
-        fileArray = (FILE*)malloc(sizeof(FILE)*sortCount);
+        fileArray[i] = (FILE*)malloc(sizeof(FILE));
+    }
+    for (i = 0; i < sortCount; i++) {
+        int j;
+        char* name = checkFile(fileName[sortList[i]]);
+        fileArray[i] = fopen(name,"w");
+        free(name);
+        for (j = 0; j < arrangement; j++) {
+            fprintf(fileArray[i],"%s\t",arrangmentName[j]);
+        }
+        fprintf(fileArray[i],"\n");
     }
 }
 
-void checkFile(char *name){
-
+char * checkFile(char *name){
+    char* temp = (char*)malloc(sizeof(char)*100);
+    strcpy(temp,name);
+    int i=0;
+    while(temp!=NULL){
+        i++;
+        char number = i + '0';
+        if(access(temp,F_OK)== -1){
+            printf("NAZWA PLIKU: %s\n",temp);
+            return temp;
+        }
+        strcpy(temp,name);
+        strcat(temp,"(");
+        strncat(temp,&number,1);
+        strcat(temp,")");
+    }
 }
