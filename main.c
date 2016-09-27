@@ -27,6 +27,8 @@ void startFiles();
 char * checkFile(char *name);
 FILE **fileArray;
 
+int seconds = 1000000;
+int nanoseconds = 1000;
 //Wielkość stacku. Domyślnie 16MB.
 int stack = 16;
 //Liczba sortowań
@@ -103,6 +105,7 @@ int main(int argc,char* argv[]){
     if(doingTest){
         checkVariables();
     }
+    changeStackSize();
     startFiles();
     //Powtarzanie sortowań
     for(i=0;i<cycles;i++){
@@ -136,7 +139,7 @@ int main(int argc,char* argv[]){
                 clock_gettime(CLOCK_MONOTONIC_RAW,&start);
                 (*sort[k])(temporaryList, amount, tryb);
                 clock_gettime(CLOCK_MONOTONIC_RAW,&end);
-                uint64_t delta = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec)/1000;
+                uint64_t delta = (end.tv_sec - start.tv_sec) * seconds + (end.tv_nsec - start.tv_nsec)/nanoseconds;
                 fseek(fileArray[k],0,SEEK_END);
                 fprintf(fileArray[k],"%"PRIu64"\t",delta);
                 printListSort(temporaryList, amount, k);
@@ -303,6 +306,10 @@ int checkArguments(int index,int argc,char* argv[]){
     else if(strcmp(arg,"--stack") == 0){
         arg = increaseIndex(&index,argc,argv);
         stack = checkNumber(arg);
+    }
+        else if(strcmp(arg,"-n") == 0){
+        seconds = 1000000000;
+        nanoseconds = 1;
     }
     else{
         printf("Zły argument, sprawdź pomoc. Argument -h lub --help");
