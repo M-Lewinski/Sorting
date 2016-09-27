@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#include <sys/resource.h>
 
 #include "src/SelectionSort/SelectSort.h"
 #include "src/InsertionSort/InsertSort.h"
@@ -14,6 +15,8 @@
 #include "src/HeapSort/HeapSort.h"
 #include "src/QuickSort/Recursive/QuickSortRecursive.h"
 #include "src/QuickSort/Iterative/QuickSortIterative.h"
+
+void changeStackSize();
 
 void a_Shaped(int *lista,int count);
 void increasing(int *lista,int count);
@@ -24,6 +27,8 @@ void startFiles();
 char * checkFile(char *name);
 FILE **fileArray;
 
+//Wielkość stacku. Domyślnie 16MB.
+int stack = 16;
 //Liczba sortowań
 int sorts = 8;
 //Tablica funkcji sortujących
@@ -292,8 +297,12 @@ int checkArguments(int index,int argc,char* argv[]){
         arg = increaseIndex(&index,argc,argv);
         max = checkNumber(arg);
     }
-        else if(strcmp(arg,"-d")== 0){
+    else if(strcmp(arg,"-d")== 0){
         tryb = 0;
+    }
+    else if(strcmp(arg,"--stack") == 0){
+        arg = increaseIndex(&index,argc,argv);
+        stack = checkNumber(arg);
     }
     else{
         printf("Zły argument, sprawdź pomoc. Argument -h lub --help");
@@ -352,5 +361,21 @@ char * checkFile(char *name){
         strcat(temp,"(");
         strncat(temp,&number,1);
         strcat(temp,")");
+    }
+}
+
+void changeStackSize(){
+    const rlim_t newStackSize = stack * 1024 * 1024;
+    struct rlimit rl;
+    int result;
+    result = getrlimit(RLIMIT_STACK,&rl);
+    if(result == 0){
+        if(rl.rlim_cur < newStackSize){
+            rl.rlim_cur = newStackSize;
+            result = setrlimit(RLIMIT_STACK,&rl);
+            if(result!=0){
+                fprintf(stderr,"Błąd stacku. Setrlimit error: %d\n",result);
+            }
+        }
     }
 }
