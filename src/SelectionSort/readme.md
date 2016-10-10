@@ -5,4 +5,4 @@
 rosnąco
 ###Złożoność obliczeniowa:
 ![Zlozonosc obliczeniowa]
-(../../images/zlozonoscn2.png?raw=true)
+(../../images/zlozonoscn2.png?raw=true =250x)
