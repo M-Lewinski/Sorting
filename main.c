@@ -22,7 +22,7 @@ void a_Shaped(int *lista,int count);
 void increasing(int *lista,int count);
 void decreasing(int *lista,int count);
 void same(int *lista,int count);
-
+void helpInfo();
 void startFiles();
 char * checkFile(char *name);
 FILE **fileArray;
@@ -85,13 +85,16 @@ void checkVariables(){
 }
 
 int main(int argc,char* argv[]){
+  int i;
     srand(time(0));
-    int i;
     if(argc < 2){
-        printf("Za mało argumentów. Sprawdź pomoc -h lub --help");
+        printf("Za mało argumentów, Pierwszym argumentem musi być długość listy. Sprawdź pomoc -h lub --help\n");
         exit(1);
     }
     else{
+      if(strcmp(argv[1],"-h")==0 || strcmp(argv[1],"--help")==0) {
+          helpInfo();
+      }
         amount = checkNumber(argv[1]);
     }
     for(i=2;i<argc;i++){
@@ -169,7 +172,38 @@ void updateSortList(int number){
 
 //Informacja pomocnicza do obsługi programu
 void helpInfo(){
-    printf("HELP!\n");
+    printf("\n");
+    printf("\tProgram napisany przez Michała Lewińskiego - https://github.com/M-Lewinski/Sorting\n");
+    printf("Program testuje szybkości różnych sortowań na liście liczb pseudolosowych w różnych konfiguracjach.\n");
+    printf("Czasy wykonywania poszczególnych sortowań zapisywane są do plików w microsekundach.\n");
+    printf("Pierwszym argumentem musi być długość listy liczb. Domyślnie program wykonuje wszystkie sortowania i sortuje rosnąco\n");
+    printf("\tOpcję programu:\n");
+    printf(" -h, --help\t program wyświetli podstawowe informacje o programie.\n");
+    printf(" -d\t sortowania będą sortować liczby malejąco. Domyślnie sortowanie rosnąco.\n");
+    printf(" -c, --cycles\t definiuje liczbę cykli. Następnie należy podać liczbę cykli oraz sposób zwiększania długości listy.\n");
+    printf("\tMożliwe sposoby modyfikacji listy:\n");
+    printf("\ta, addition\t Dodanie ustalonej wartości do obecnej długości. -c 10 a 10 - Sortowania wykonają się 10 razy, zwiększjąc za każdym razem długość listy o 10\n");
+    printf("\tm, multiplication\t Pomnożenie obecnej długości o ustaloną wartość. -c 10 m 2 - Sortowania wykonają się 10 razy, za każdym razem długość listy jest dwukrotnie zwiększana.\n");
+    printf(" -t, --test\t program będzie sprawdzać czy lista została posortowana prawidłowo.\n");
+    printf(" --max\t możliwość zmiany maksymalnie wartości, która jest losowana. Domyślnie --max %d.\n",max);
+    printf(" --min\t możliwość zmiany minimalnej wartości, która jest losowana. Domyślnie --min %d.\n",min);
+    printf(" --stack\t możliwość zmiany wielkości stacku. Wartość podawana jest w MB. Domyślnie --stack %d\n",stack);
+    printf(" -n\t wyniki czasów będę zapisywane w nanosekundach");
+
+    printf("\nMożliowści sortowania:\n");
+    printf(" -a, --all\t program wykona wszystkie sortowania. Jest to domyślnie ustawiona opcja w programie. NIE JEST KONIECZNA.\n");
+    printf(" -s, --selection\t wykonane zostanie sortowanie Selection Sort.\n");
+    printf(" -i, --insertion\t wykonane zostanie sortowanie Insertion Sort.\n");
+    printf(" -sh, --shell\t wykonane zostanie sortowanie Shell Sort.\n");
+    printf(" -hp, --heap\t wykonane zostanie sortowanie Heap Sort.\n");
+    printf(" -qsrrand\t wykonane zostanie sortowanie Quick Sort rekurencyjny z wyborem losowego klucza.\n");
+    printf(" -qsrright\t wykonane zostanie sortowanie Quick Sort rekurencyjny z wyborem prawego klucza.\n");
+    printf(" -qsirand\t wykonane zostanie sortowanie Quick Sort iteracyjny z wyborem losowego klucza.\n");
+    printf(" -qsiright\t wykonane zostanie sortowanie Quick Sort iteracyjny z wyborem prawego klucza.\n");
+    printf("\tPrzykład użycia:\n");
+    printf("./Sorting 1000 -a -c 10 m 2\n");
+    printf("Powyższa komenda wykona wszystkie sortowania, zaczynając z listą o długości 1000 i wykona 10 cykli, zwiększając długość listy dwukrotnie. -a jest opcjonalne\nDługości list: 1000 2000 4000 8000 16000 32000 64000 128000 256000 512000\n");
+    printf("\n");
     exit(0);
 }
 
@@ -252,10 +286,7 @@ void test(int *list,int amount,int sort,int tryb){
 //Obsługa argumentów oraz sprawdzenie ich poprawności
 int checkArguments(int index,int argc,char* argv[]){
     char *arg = argv[index];
-    if(strcmp(arg,"-h")==0 || strcmp(arg,"--help")==0) {
-        helpInfo();
-    }
-    else if(strcmp(arg,"-c")==0 || strcmp(arg,"-cycles")==0){
+    if(strcmp(arg,"-c")==0 || strcmp(arg,"--cycles")==0){
         arg = increaseIndex(&index,argc,argv);
         cycles=checkNumber(arg);
         if(cycles < 1){
@@ -280,8 +311,29 @@ int checkArguments(int index,int argc,char* argv[]){
             exit(1);
         }
     }
-    else if(strcmp(arg,"-s")==0 || strcmp(arg,"-selection")==0){
+    else if(strcmp(arg,"-s")==0 || strcmp(arg,"--selection")==0){
         updateSortList(0);
+    }
+    else if(strcmp(arg,"-i")==0 || strcmp(arg,"--insertion")==0){
+        updateSortList(1);
+    }
+    else if(strcmp(arg,"-sh")==0 || strcmp(arg,"--shell")==0){
+        updateSortList(2);
+    }
+    else if(strcmp(arg,"-hp")==0 || strcmp(arg,"--heap")==0){
+        updateSortList(3);
+    }
+    else if(strcmp(arg,"-qsrrand")==0){
+        updateSortList(4);
+    }
+    else if(strcmp(arg,"-qsrright")==0){
+        updateSortList(5);
+    }
+    else if(strcmp(arg,"-qsirand")==0){
+        updateSortList(6);
+    }
+    else if(strcmp(arg,"-qsiright")==0){
+        updateSortList(7);
     }
     else if(strcmp(arg,"-a")==0 || strcmp(arg,"-all")==0){
         int i;
@@ -292,11 +344,11 @@ int checkArguments(int index,int argc,char* argv[]){
     else if(strcmp(arg,"-t")== 0 || strcmp(arg,"--test")== 0) {
         doingTest = true;
     }
-    else if(strcmp(arg,"-min")== 0){
+    else if(strcmp(arg,"--min")== 0){
         arg = increaseIndex(&index,argc,argv);
         min = checkNumber(arg);
     }
-    else if(strcmp(arg,"-max")== 0){
+    else if(strcmp(arg,"--max")== 0){
         arg = increaseIndex(&index,argc,argv);
         max = checkNumber(arg);
     }
@@ -337,7 +389,7 @@ void same(int *lista,int count){
 
 void startFiles(){
     int i;
-    fileArray = (FILE*)malloc(sizeof(FILE)*sortCount);
+    fileArray = (FILE**)malloc(sizeof(FILE)*sortCount);
     for (i = 0; i < sortCount; ++i) {
         fileArray[i] = (FILE*)malloc(sizeof(FILE));
     }
@@ -369,6 +421,7 @@ char * checkFile(char *name){
         strncat(temp,&number,1);
         strcat(temp,")");
     }
+    return NULL;
 }
 
 void changeStackSize(){

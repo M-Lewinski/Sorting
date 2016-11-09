@@ -4,5 +4,4 @@
 ###Sortowane dane:
 Rosnąco
 ###Złożoność obliczeniowa:
-![Zlozonosc obliczeniowa]
-<img src = "../../images/zlozonoscn2.png" alt = "">
+<img src = "../../images/zlozonoscn2.png" alt = "" width="10%">
