@@ -5,4 +5,4 @@
 Rosnąco
 ###Złożoność obliczeniowa:
 ![Zlozonosc obliczeniowa]
-(../../images/zlozonoscn2.png?raw=true =100x150)
+<img src = "../../images/zlozonoscn2.png" alt = "">
