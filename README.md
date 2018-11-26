@@ -46,7 +46,7 @@ Możliowści sortowania:
 ```
 ./Sorting 1000 -a -c 10 m 2
 ```
-Powyższa komenda wykona wszystkie sortowania, zaczynając z listą o długości 1000 i wykona 10 cykli, zwiększając długość listy dwukrotnie. -a jest opcjonalne
+Powyższa komenda wykona wszystkie sortowania, zaczynając z listą o długości 1000 i wykona 10 cykli, zwiększając długość listy dwukrotnie. -a jest opcjonalne.
 Długości list liczb w poszczególnych cyklach: 1000 2000 4000 8000 16000 32000 64000 128000 256000 512000
 
 ## Autor
